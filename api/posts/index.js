@@ -8,15 +8,25 @@ export default async function handler(req, res) {
     const to = from + pageSize - 1;
 
     try {
-      const { data: posts, error, count } = await supabase
-        .from('posts')
-        .select('id, title, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count', { count: 'exact' })
-        .order('created_at', { ascending: false })
-        .range(from, to);
+      const [postsRes, replyCountRes] = await Promise.all([
+        supabase
+          .from('posts')
+          .select('id, title, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range(from, to),
+        supabase
+          .from('replies')
+          .select('id', { count: 'exact', head: true })
+      ]);
 
-      if (error) throw error;
+      if (postsRes.error) throw postsRes.error;
+      if (replyCountRes.error) throw replyCountRes.error;
 
-      return res.status(200).json({ posts, totalCount: count });
+      return res.status(200).json({
+        posts: postsRes.data,
+        totalCount: postsRes.count,
+        totalReplyCount: replyCountRes.count
+      });
     } catch (err) {
       return res.status(500).json({ error: err.message });
     }

@@ -171,14 +171,14 @@ body {
 }
 
 .post-item-child {
-  padding-left: 28px;
+  padding-left: calc(28px * var(--depth, 1));
   position: relative;
 }
 
 .post-item-child::before {
   content: "";
   position: absolute;
-  left: 8px;
+  left: calc(28px * (var(--depth, 1) - 1) + 8px);
   top: 22px;
   width: 12px;
   height: 12px;

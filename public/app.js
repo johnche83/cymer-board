@@ -125,15 +125,15 @@ async function apiCreateReply(postId, payload) {
 async function loadList(page = 1) {
   currentPage = page;
   try {
-    const { posts, totalCount } = await apiGetPosts(page);
-    renderList(posts, totalCount, page);
+    const { posts, totalCount, totalReplyCount } = await apiGetPosts(page);
+    renderList(posts, totalCount, totalReplyCount, page);
   } catch (err) {
     showToast(err.message);
   }
 }
 
-function renderList(posts, totalCount, page) {
-  postCountEl.textContent = `전체 ${totalCount}개`;
+function renderList(posts, totalCount, totalReplyCount, page) {
+  postCountEl.textContent = `게시글 ${totalCount}개 · 답글 ${totalReplyCount}개`;
 
   if (!posts.length) {
     postListEl.innerHTML = '';
@@ -153,9 +153,12 @@ function renderList(posts, totalCount, page) {
   });
   const topLevel = posts.filter(p => !(p.parent_id && byId.has(p.parent_id)));
 
-  postListEl.innerHTML = topLevel.map(post =>
-    renderPostRow(post) + (childrenByParent.get(post.id) || []).map(child => renderPostRow(child, true)).join('')
-  ).join('');
+  function renderBranch(post, depth) {
+    const children = childrenByParent.get(post.id) || [];
+    return renderPostRow(post, depth) + children.map(child => renderBranch(child, depth + 1)).join('');
+  }
+
+  postListEl.innerHTML = topLevel.map(post => renderBranch(post, 0)).join('');
 
   postListEl.querySelectorAll('.post-item').forEach(el => {
     el.addEventListener('click', () => openDetail(el.dataset.id));
@@ -164,9 +167,10 @@ function renderList(posts, totalCount, page) {
   renderPagination(totalCount, page);
 }
 
-function renderPostRow(post, isChild = false) {
+function renderPostRow(post, depth = 0) {
+  const style = depth > 0 ? ` style="--depth: ${depth}"` : '';
   return `
-    <div class="post-item${isChild ? ' post-item-child' : ''}" data-id="${post.id}">
+    <div class="post-item${depth > 0 ? ' post-item-child' : ''}" data-id="${post.id}"${style}>
       <div class="post-item-top">
         ${post.is_repost ? '<span class="tag tag-repost">Re:</span>' : ''}
         <span class="post-item-title">${escapeHtml(post.title)}</span>
