@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cymer 무물방</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <img src="logo.png" alt="Cymer - An ASML company" class="logo">
+    <h1 class="board-title">Cymer 무물방</h1>
+    <p class="board-subtitle">무엇이든 물어보세요</p>
+  </header>
+
+  <main class="container">
+
+    <!-- 게시판 목록 화면 -->
+    <section id="view-list" class="view">
+      <div class="list-toolbar">
+        <span id="post-count" class="post-count"></span>
+        <button id="btn-new-post" class="btn btn-primary">글쓰기</button>
+      </div>
+
+      <div id="post-list" class="post-list">
+        <!-- 게시글 항목 JS로 렌더링 -->
+      </div>
+
+      <div id="empty-state" class="empty-state hidden">
+        <p>아직 등록된 글이 없습니다.</p>
+        <p class="empty-sub">첫 번째 질문을 남겨보세요.</p>
+      </div>
+
+      <nav id="pagination" class="pagination"></nav>
+    </section>
+
+    <!-- 글쓰기 화면 -->
+    <section id="view-write" class="view hidden">
+      <h2 class="view-heading" id="write-heading">새 글 쓰기</h2>
+      <form id="form-write" class="post-form">
+        <input type="hidden" id="write-parent-id" value="">
+
+        <label class="form-label" for="write-title">질문 제목</label>
+        <input type="text" id="write-title" class="form-input" placeholder="제목을 입력하세요" maxlength="150" required>
+
+        <fieldset class="name-choice">
+          <legend class="form-label">작성자</legend>
+          <label class="radio-option">
+            <input type="radio" name="write-name-mode" value="anon" checked>
+            <span>익명</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="write-name-mode" value="real">
+            <span>실명</span>
+          </label>
+          <input type="text" id="write-author-name" class="form-input form-input-inline hidden" placeholder="이름을 입력하세요" maxlength="30">
+        </fieldset>
+
+        <label class="form-label" for="write-body">질문 내용</label>
+        <textarea id="write-body" class="form-textarea" placeholder="내용을 입력하세요" maxlength="3000" required></textarea>
+
+        <div class="form-actions">
+          <button type="button" id="btn-cancel-write" class="btn btn-secondary">취소</button>
+          <button type="submit" class="btn btn-primary">등록</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 게시글 상세 화면 -->
+    <section id="view-detail" class="view hidden">
+      <button id="btn-back-to-list" class="btn-link">← 목록으로</button>
+
+      <article id="detail-original" class="post-detail">
+        <!-- 원글 JS로 렌더링 -->
+      </article>
+
+      <div id="detail-replies" class="reply-list">
+        <!-- 답글 목록 JS로 렌더링 -->
+      </div>
+
+      <div class="reply-form-wrap">
+        <h3 class="reply-form-heading">답글 작성</h3>
+        <form id="form-reply" class="post-form">
+          <fieldset class="name-choice">
+            <legend class="form-label">작성자</legend>
+            <label class="radio-option">
+              <input type="radio" name="reply-name-mode" value="anon" checked>
+              <span>익명</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="reply-name-mode" value="real">
+              <span>실명</span>
+            </label>
+            <input type="text" id="reply-author-name" class="form-input form-input-inline hidden" placeholder="이름을 입력하세요" maxlength="30">
+          </fieldset>
+
+          <textarea id="reply-body" class="form-textarea reply-textarea" placeholder="답글 내용을 입력하세요" maxlength="3000" required></textarea>
+
+          <fieldset class="reply-type-choice">
+            <legend class="form-label">답글 형태</legend>
+            <label class="radio-option">
+              <input type="radio" name="reply-type" value="comment" checked>
+              <span>일반 답글</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" name="reply-type" value="repost">
+              <span>별도 게시글로 남기기 (Re:)</span>
+            </label>
+          </fieldset>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">답글 등록</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <div id="toast" class="toast hidden"></div>
+
+  </main>
+
+  <footer class="site-footer">
+    <p>Cymer, an ASML company</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
