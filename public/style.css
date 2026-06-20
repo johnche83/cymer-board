@@ -270,6 +270,13 @@ body {
   margin: 0 0 -8px;
 }
 
+.form-warning {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--cymer-orange-dark);
+  margin: 0 0 -8px;
+}
+
 .form-input, .form-textarea {
   font-family: inherit;
   font-size: 14px;
