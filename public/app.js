@@ -36,6 +36,7 @@ const searchInput = document.getElementById('search-input');
 const formReply = document.getElementById('form-reply');
 const replyBody = document.getElementById('reply-body');
 const replyAuthorName = document.getElementById('reply-author-name');
+const replyPassword = document.getElementById('reply-password');
 
 const detailOriginal = document.getElementById('detail-original');
 const detailReplies = document.getElementById('detail-replies');
@@ -95,9 +96,11 @@ function getNameModeValue(radioName, inputEl) {
   return { author_name: name || '익명', is_anonymous: false };
 }
 
-writePassword.addEventListener('input', () => {
-  writePassword.value = writePassword.value.replace(/[^A-Za-z0-9!@#$%^&*()_+\-=]/g, '').slice(0, 8);
-});
+function filterPasswordInput(el) {
+  el.value = el.value.replace(/[^A-Za-z0-9!@#$%^&*()_+\-=]/g, '').slice(0, 8);
+}
+writePassword.addEventListener('input', () => filterPasswordInput(writePassword));
+replyPassword.addEventListener('input', () => filterPasswordInput(replyPassword));
 
 headerHome.addEventListener('click', () => {
   searchInput.value = '';
@@ -154,8 +157,20 @@ async function apiCreateReply(postId, payload) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
-  if (!res.ok) throw new Error('답글 등록에 실패했습니다');
-  return res.json();
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '답글 등록에 실패했습니다');
+  return data;
+}
+
+async function apiDeleteReply(replyId, password) {
+  const res = await fetch(`/api/replies/${replyId}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '삭제에 실패했습니다');
+  return data;
 }
 
 // ===== List rendering =====
@@ -333,14 +348,31 @@ function renderDetail(post, replies) {
     detailReplies.innerHTML = '';
   } else {
     detailReplies.innerHTML = replies.map(r => `
-      <div class="reply-item">
+      <div class="reply-item" data-reply-id="${r.id}">
         <div class="reply-item-meta">
           <span class="tag ${r.is_anonymous ? 'tag-anon' : 'tag-real'}">${escapeHtml(r.author_name)}</span>
           <span>${formatDate(r.created_at)}</span>
         </div>
         <div class="reply-item-body">${escapeHtml(r.body)}</div>
+        <div class="post-delete">
+          <button type="button" class="btn-link btn-delete btn-delete-reply" data-reply-id="${r.id}">삭제</button>
+        </div>
       </div>
     `).join('');
+
+    detailReplies.querySelectorAll('.btn-delete-reply').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const password = window.prompt('답글 작성 시 입력한 비밀번호를 입력하세요');
+        if (password === null) return;
+        try {
+          await apiDeleteReply(btn.dataset.replyId, password);
+          showToast('답글이 삭제되었습니다');
+          openDetail(currentPostId);
+        } catch (err) {
+          showToast(err.message);
+        }
+      });
+    });
   }
 
   formReply.reset();
@@ -368,8 +400,14 @@ formReply.addEventListener('submit', async (e) => {
     return;
   }
 
+  const password = replyPassword.value;
+  if (!PASSWORD_PATTERN.test(password)) {
+    showToast('비밀번호는 영문/숫자/특수문자 4~8자로 입력해주세요');
+    return;
+  }
+
   try {
-    await apiCreateReply(currentPostId, { body, author_name, is_anonymous });
+    await apiCreateReply(currentPostId, { body, author_name, is_anonymous, password });
     showToast('답글이 등록되었습니다');
     openDetail(currentPostId);
   } catch (err) {

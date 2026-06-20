@@ -21,6 +21,8 @@ create table replies (
   body text not null,
   author_name text not null default '익명',
   is_anonymous boolean not null default true,
+  password_salt text,
+  password_hash text,
   created_at timestamptz not null default now()
 );
 
@@ -36,6 +38,8 @@ alter table replies enable row level security;
 -- create policy "Allow public read" on posts for select using (true);
 -- create policy "Allow public read" on replies for select using (true);
 
--- ===== 기존 DB에 이미 posts/replies 테이블이 있는 경우, 아래 마이그레이션만 실행하세요 =====
+-- ===== 기존 DB에 이미 posts/replies 테이블이 있는 경우, 아래 마이그레이션만 새 쿼리 탭에서 실행하세요 =====
 -- alter table posts add column if not exists password_salt text;
 -- alter table posts add column if not exists password_hash text;
+-- alter table replies add column if not exists password_salt text;
+-- alter table replies add column if not exists password_hash text;
