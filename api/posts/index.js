@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     try {
       const { data: posts, error, count } = await supabase
         .from('posts')
-        .select('id, title, author_name, is_anonymous, is_repost, created_at, reply_count', { count: 'exact' })
+        .select('id, title, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(from, to);
 

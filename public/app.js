@@ -143,8 +143,30 @@ function renderList(posts, totalCount, page) {
   }
   emptyStateEl.classList.add('hidden');
 
-  postListEl.innerHTML = posts.map(post => `
-    <div class="post-item" data-id="${post.id}">
+  const byId = new Map(posts.map(p => [p.id, p]));
+  const childrenByParent = new Map();
+  posts.forEach(p => {
+    if (p.parent_id && byId.has(p.parent_id)) {
+      if (!childrenByParent.has(p.parent_id)) childrenByParent.set(p.parent_id, []);
+      childrenByParent.get(p.parent_id).push(p);
+    }
+  });
+  const topLevel = posts.filter(p => !(p.parent_id && byId.has(p.parent_id)));
+
+  postListEl.innerHTML = topLevel.map(post =>
+    renderPostRow(post) + (childrenByParent.get(post.id) || []).map(child => renderPostRow(child, true)).join('')
+  ).join('');
+
+  postListEl.querySelectorAll('.post-item').forEach(el => {
+    el.addEventListener('click', () => openDetail(el.dataset.id));
+  });
+
+  renderPagination(totalCount, page);
+}
+
+function renderPostRow(post, isChild = false) {
+  return `
+    <div class="post-item${isChild ? ' post-item-child' : ''}" data-id="${post.id}">
       <div class="post-item-top">
         ${post.is_repost ? '<span class="tag tag-repost">Re:</span>' : ''}
         <span class="post-item-title">${escapeHtml(post.title)}</span>
@@ -155,13 +177,7 @@ function renderList(posts, totalCount, page) {
         <span>${formatDate(post.created_at)}</span>
       </div>
     </div>
-  `).join('');
-
-  postListEl.querySelectorAll('.post-item').forEach(el => {
-    el.addEventListener('click', () => openDetail(el.dataset.id));
-  });
-
-  renderPagination(totalCount, page);
+  `;
 }
 
 function renderPagination(totalCount, page) {

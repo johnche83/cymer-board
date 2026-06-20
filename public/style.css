@@ -170,6 +170,22 @@ body {
   color: var(--ink-soft);
 }
 
+.post-item-child {
+  padding-left: 28px;
+  position: relative;
+}
+
+.post-item-child::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 22px;
+  width: 12px;
+  height: 12px;
+  border-left: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
 .reply-count {
   font-size: 12.5px;
   color: var(--cymer-orange-dark);
@@ -273,6 +289,12 @@ body {
   margin: 0;
   padding: 0;
   flex-wrap: wrap;
+}
+
+.name-choice .form-label, .reply-type-choice .form-label {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
 }
 
 .radio-option {
