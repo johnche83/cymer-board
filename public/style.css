@@ -43,10 +43,16 @@ body {
   border-bottom: 1px solid var(--line);
 }
 
-.logo {
-  height: 42px;
-  object-fit: contain;
-  margin-bottom: 18px;
+.header-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 .board-title {
@@ -90,6 +96,14 @@ body {
   font-size: 13px;
   color: var(--ink-soft);
 }
+
+/* ===== Search ===== */
+.search-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.search-bar .form-input { flex: 1; }
 
 /* ===== Buttons ===== */
 .btn {
@@ -426,6 +440,21 @@ body {
   font-size: 12px;
   color: var(--ink-soft);
 }
+.footer-logo {
+  height: 32px;
+  object-fit: contain;
+}
+
+/* ===== Post delete ===== */
+.post-delete {
+  margin-top: 14px;
+  text-align: right;
+}
+.btn-delete {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+}
+.btn-delete:hover { color: #C0392B; }
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {

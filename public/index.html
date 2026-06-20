@@ -9,15 +9,21 @@
 <body>
 
   <header class="site-header">
-    <img src="logo.png" alt="Cymer - An ASML company" class="logo">
-    <h1 class="board-title">Cymer 무물방</h1>
-    <p class="board-subtitle">무엇이든 물어보세요</p>
+    <button type="button" id="header-home" class="header-home">
+      <h1 class="board-title">Cymer 무물방</h1>
+      <p class="board-subtitle">무엇이든 물어보세요</p>
+    </button>
   </header>
 
   <main class="container">
 
     <!-- 게시판 목록 화면 -->
     <section id="view-list" class="view">
+      <form id="form-search" class="search-bar">
+        <input type="text" id="search-input" class="form-input" placeholder="제목, 내용으로 검색">
+        <button type="submit" class="btn btn-secondary">검색</button>
+      </form>
+
       <div class="list-toolbar">
         <span id="post-count" class="post-count"></span>
         <button id="btn-new-post" class="btn btn-primary">글쓰기</button>
@@ -59,6 +65,9 @@
 
         <label class="form-label" for="write-body">질문 내용</label>
         <textarea id="write-body" class="form-textarea" placeholder="내용을 입력하세요" maxlength="3000" required></textarea>
+
+        <label class="form-label" for="write-password">삭제 비밀번호 (영문/숫자/특수문자 4~8자)</label>
+        <input type="password" id="write-password" class="form-input" placeholder="추후 삭제 시 사용할 비밀번호" minlength="4" maxlength="8" pattern="[A-Za-z0-9!@#$%^&amp;*()_+\-=]{4,8}" autocomplete="new-password" required>
 
         <div class="form-actions">
           <button type="button" id="btn-cancel-write" class="btn btn-secondary">취소</button>
@@ -121,7 +130,7 @@
   </main>
 
   <footer class="site-footer">
-    <p>Cymer, an ASML company</p>
+    <img src="logo.png" alt="Cymer - An ASML company" class="footer-logo">
   </footer>
 
   <script src="app.js"></script>

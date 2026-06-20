@@ -10,6 +10,8 @@ create table posts (
   parent_id uuid references posts(id),
   is_repost boolean not null default false,
   reply_count integer not null default 0,
+  password_salt text,
+  password_hash text,
   created_at timestamptz not null default now()
 );
 
@@ -33,3 +35,7 @@ alter table replies enable row level security;
 -- 만약 클라이언트에서 직접 anon key로 접근할 계획이 있다면 아래 정책을 추가하세요:
 -- create policy "Allow public read" on posts for select using (true);
 -- create policy "Allow public read" on replies for select using (true);
+
+-- ===== 기존 DB에 이미 posts/replies 테이블이 있는 경우, 아래 마이그레이션만 실행하세요 =====
+-- alter table posts add column if not exists password_salt text;
+-- alter table posts add column if not exists password_hash text;

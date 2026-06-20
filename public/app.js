@@ -1,9 +1,11 @@
 // ===== Config =====
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 10;
+const PASSWORD_PATTERN = /^[A-Za-z0-9!@#$%^&*()_+\-=]{4,8}$/;
 
 // ===== State =====
 let currentPage = 1;
 let currentPostId = null;
+let currentQuery = '';
 
 // ===== Elements =====
 const viewList = document.getElementById('view-list');
@@ -25,6 +27,11 @@ const writeParentId = document.getElementById('write-parent-id');
 const writeTitle = document.getElementById('write-title');
 const writeBody = document.getElementById('write-body');
 const writeAuthorName = document.getElementById('write-author-name');
+const writePassword = document.getElementById('write-password');
+
+const headerHome = document.getElementById('header-home');
+const formSearch = document.getElementById('form-search');
+const searchInput = document.getElementById('search-input');
 
 const formReply = document.getElementById('form-reply');
 const replyBody = document.getElementById('reply-body');
@@ -88,11 +95,41 @@ function getNameModeValue(radioName, inputEl) {
   return { author_name: name || '익명', is_anonymous: false };
 }
 
+writePassword.addEventListener('input', () => {
+  writePassword.value = writePassword.value.replace(/[^A-Za-z0-9!@#$%^&*()_+\-=]/g, '').slice(0, 8);
+});
+
+headerHome.addEventListener('click', () => {
+  searchInput.value = '';
+  currentQuery = '';
+  showView(viewList);
+  loadList(1);
+});
+
+formSearch.addEventListener('submit', (e) => {
+  e.preventDefault();
+  currentQuery = searchInput.value.trim();
+  loadList(1);
+});
+
 // ===== API calls =====
-async function apiGetPosts(page) {
-  const res = await fetch(`/api/posts?page=${page}&pageSize=${PAGE_SIZE}`);
+async function apiGetPosts(page, query) {
+  const params = new URLSearchParams({ page, pageSize: PAGE_SIZE });
+  if (query) params.set('q', query);
+  const res = await fetch(`/api/posts?${params.toString()}`);
   if (!res.ok) throw new Error('목록을 불러오지 못했습니다');
   return res.json();
+}
+
+async function apiDeletePost(id, password) {
+  const res = await fetch(`/api/posts/${id}`, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ password })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '삭제에 실패했습니다');
+  return data;
 }
 
 async function apiGetPost(id) {
@@ -125,15 +162,17 @@ async function apiCreateReply(postId, payload) {
 async function loadList(page = 1) {
   currentPage = page;
   try {
-    const { posts, totalCount, totalReplyCount } = await apiGetPosts(page);
-    renderList(posts, totalCount, totalReplyCount, page);
+    const { posts, listCount, totalCount, totalReplyCount } = await apiGetPosts(page, currentQuery);
+    renderList(posts, listCount, totalCount, totalReplyCount, page);
   } catch (err) {
     showToast(err.message);
   }
 }
 
-function renderList(posts, totalCount, totalReplyCount, page) {
-  postCountEl.textContent = `게시글 ${totalCount}개 · 답글 ${totalReplyCount}개`;
+function renderList(posts, listCount, totalCount, totalReplyCount, page) {
+  postCountEl.textContent = currentQuery
+    ? `검색 결과 ${listCount}개 (전체 게시글 ${totalCount}개 · 답글 ${totalReplyCount}개)`
+    : `게시글 ${totalCount}개 · 답글 ${totalReplyCount}개`;
 
   if (!posts.length) {
     postListEl.innerHTML = '';
@@ -164,7 +203,7 @@ function renderList(posts, totalCount, totalReplyCount, page) {
     el.addEventListener('click', () => openDetail(el.dataset.id));
   });
 
-  renderPagination(totalCount, page);
+  renderPagination(listCount, page);
 }
 
 function renderPostRow(post, depth = 0) {
@@ -222,7 +261,12 @@ formWrite.addEventListener('submit', async (e) => {
   e.preventDefault();
   const title = writeTitle.value.trim();
   const body = writeBody.value.trim();
+  const password = writePassword.value;
   if (!title || !body) return;
+  if (!PASSWORD_PATTERN.test(password)) {
+    showToast('비밀번호는 영문/숫자/특수문자 4~8자로 입력해주세요');
+    return;
+  }
 
   const { author_name, is_anonymous } = getNameModeValue('write-name-mode', writeAuthorName);
   const parentId = writeParentId.value || null;
@@ -234,10 +278,13 @@ formWrite.addEventListener('submit', async (e) => {
       author_name,
       is_anonymous,
       parent_id: parentId,
-      is_repost: !!parentId
+      is_repost: !!parentId,
+      password
     });
     showToast('등록되었습니다');
     showView(viewList);
+    currentQuery = '';
+    searchInput.value = '';
     loadList(1);
   } catch (err) {
     showToast(err.message);
@@ -264,7 +311,23 @@ function renderDetail(post, replies) {
       <span>${formatDate(post.created_at)}</span>
     </div>
     <div class="post-detail-body">${escapeHtml(post.body)}</div>
+    <div class="post-delete">
+      <button type="button" id="btn-delete-post" class="btn-link btn-delete">삭제</button>
+    </div>
   `;
+
+  document.getElementById('btn-delete-post').addEventListener('click', async () => {
+    const password = window.prompt('게시글 작성 시 입력한 비밀번호를 입력하세요');
+    if (password === null) return;
+    try {
+      await apiDeletePost(post.id, password);
+      showToast('삭제되었습니다');
+      showView(viewList);
+      loadList(1);
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
 
   if (!replies.length) {
     detailReplies.innerHTML = '';
