@@ -11,6 +11,7 @@ let currentQuery = '';
 const viewList = document.getElementById('view-list');
 const viewWrite = document.getElementById('view-write');
 const viewDetail = document.getElementById('view-detail');
+const viewNotice = document.getElementById('view-notice');
 
 const postListEl = document.getElementById('post-list');
 const postCountEl = document.getElementById('post-count');
@@ -45,7 +46,7 @@ const toastEl = document.getElementById('toast');
 
 // ===== Utilities =====
 function showView(view) {
-  [viewList, viewWrite, viewDetail].forEach(v => v.classList.add('hidden'));
+  [viewList, viewWrite, viewDetail, viewNotice].forEach(v => v.classList.add('hidden'));
   view.classList.remove('hidden');
   window.scrollTo({ top: 0, behavior: 'instant' });
 }
@@ -101,6 +102,13 @@ function filterPasswordInput(el) {
 }
 writePassword.addEventListener('input', () => filterPasswordInput(writePassword));
 replyPassword.addEventListener('input', () => filterPasswordInput(replyPassword));
+
+document.getElementById('notice-row').addEventListener('click', () => {
+  showView(viewNotice);
+});
+document.getElementById('btn-back-from-notice').addEventListener('click', () => {
+  showView(viewList);
+});
 
 headerHome.addEventListener('click', () => {
   searchInput.value = '';

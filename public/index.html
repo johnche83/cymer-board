@@ -29,6 +29,13 @@
         <button id="btn-new-post" class="btn btn-primary">글쓰기</button>
       </div>
 
+      <div id="notice-row" class="post-item notice-item">
+        <div class="post-item-top">
+          <span class="notice-pin">📌</span>
+          <span class="post-item-title notice-title">Cymer 무물방 운영 기준</span>
+        </div>
+      </div>
+
       <div id="post-list" class="post-list">
         <!-- 게시글 항목 JS로 렌더링 -->
       </div>
@@ -75,6 +82,14 @@
           <button type="submit" class="btn btn-primary">등록</button>
         </div>
       </form>
+    </section>
+
+    <!-- 공지 상세 화면 -->
+    <section id="view-notice" class="view hidden">
+      <button id="btn-back-from-notice" class="btn-link">← 목록으로</button>
+      <div class="notice-detail">
+        <img src="notice.png" alt="Cymer 무물방 운영 기준" class="notice-image">
+      </div>
     </section>
 
     <!-- 게시글 상세 화면 -->

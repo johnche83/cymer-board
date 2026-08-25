@@ -452,6 +452,34 @@ body {
   object-fit: contain;
 }
 
+/* ===== Notice (pinned) ===== */
+.notice-item {
+  background: var(--cymer-orange);
+  border-radius: 8px;
+  margin-bottom: 4px;
+  border-bottom: none;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+.notice-item:hover .notice-title { opacity: 0.85; }
+.notice-pin {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.notice-title {
+  font-weight: 700;
+  color: #fff;
+}
+.notice-detail {
+  text-align: center;
+  margin-top: 8px;
+}
+.notice-image {
+  max-width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-card);
+}
+
 /* ===== Post delete ===== */
 .post-delete {
   margin-top: 14px;
