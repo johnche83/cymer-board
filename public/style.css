@@ -452,32 +452,154 @@ body {
   object-fit: contain;
 }
 
-/* ===== Notice (pinned) ===== */
+/* ===== Notice row (pinned) ===== */
 .notice-item {
-  background: var(--cymer-orange);
-  border-radius: 8px;
-  margin-bottom: 4px;
-  border-bottom: none;
-  padding: 14px 16px;
   cursor: pointer;
 }
-.notice-item:hover .notice-title { opacity: 0.85; }
+.notice-item:hover .notice-title { color: var(--cymer-orange-dark); }
 .notice-pin {
   font-size: 14px;
   flex-shrink: 0;
 }
 .notice-title {
-  font-weight: 700;
+  font-weight: 800;
+  color: var(--cymer-orange);
+}
+
+/* ===== Notice detail card ===== */
+.notice-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+.nc-header {
+  background: var(--cymer-navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  gap: 16px;
+}
+.nc-title {
+  font-size: 17px;
+  font-weight: 800;
   color: #fff;
 }
-.notice-detail {
-  text-align: center;
-  margin-top: 8px;
+.nc-header-right {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+  text-align: right;
+  flex-shrink: 0;
 }
-.notice-image {
-  max-width: 100%;
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-card);
+.nc-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.nc-banner-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.nc-banner-icon { font-size: 24px; flex-shrink: 0; }
+.nc-banner-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--cymer-navy);
+  margin-bottom: 4px;
+}
+.nc-banner-sub { font-size: 13px; color: var(--ink-soft); }
+.nc-banner-target {
+  background: #EEF2FB;
+  color: var(--cymer-navy);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-align: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.nc-columns {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.nc-col {
+  flex: 1;
+  padding: 18px 16px;
+  border-right: 1px solid var(--line-soft);
+}
+.nc-col:last-child { border-right: none; }
+.nc-col-green { background: #F3FBF3; }
+.nc-col-red { background: #FEF6F6; }
+.nc-col-blue { background: #F0F4FB; }
+.nc-col-header {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nc-col-green .nc-col-header { color: #2D7A3A; }
+.nc-col-red .nc-col-header { color: #C0392B; }
+.nc-col-blue .nc-col-header { color: var(--cymer-navy); }
+.nc-col-icon { font-size: 16px; }
+.nc-list {
+  margin: 0;
+  padding: 0 0 0 4px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nc-list li {
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.5;
+  padding-left: 14px;
+  position: relative;
+}
+.nc-col-green .nc-list li::before { content: "●"; color: #2D7A3A; position: absolute; left: 0; font-size: 8px; top: 4px; }
+.nc-col-red .nc-list li::before { content: "●"; color: #C0392B; position: absolute; left: 0; font-size: 8px; top: 4px; }
+.nc-rules {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.nc-rule {
+  background: var(--paper);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nc-rule-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cymer-navy);
+  flex-shrink: 0;
+}
+.nc-rule-val {
+  font-size: 12px;
+  color: var(--ink-soft);
+  text-align: right;
+}
+.nc-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-size: 11px;
+  color: var(--ink-soft);
+  background: var(--bg);
 }
 
 /* ===== Post delete ===== */
@@ -497,6 +619,12 @@ body {
   .container { padding: 20px 14px 60px; }
   .post-detail { padding: 18px; }
   .form-input-inline { max-width: 100%; }
+  .nc-columns { flex-direction: column; }
+  .nc-col { border-right: none; border-bottom: 1px solid var(--line-soft); }
+  .nc-col:last-child { border-bottom: none; }
+  .nc-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .nc-banner { flex-direction: column; }
+  .nc-banner-target { align-self: flex-start; }
 }
 
 /* ===== Reduced motion ===== */
