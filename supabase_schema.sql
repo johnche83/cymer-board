@@ -43,3 +43,4 @@ alter table replies enable row level security;
 -- alter table posts add column if not exists password_hash text;
 -- alter table replies add column if not exists password_salt text;
 -- alter table replies add column if not exists password_hash text;
+-- alter table posts add column if not exists is_hidden boolean not null default false;

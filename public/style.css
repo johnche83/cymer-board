@@ -219,6 +219,7 @@ body {
 .tag-anon { background: var(--tag-anon-bg); color: var(--tag-anon-text); }
 .tag-real { background: var(--tag-real-bg); color: var(--tag-real-text); }
 .tag-repost { background: var(--tag-repost-bg); color: var(--tag-repost-text); }
+.tag-hidden { background: #F2F2F2; color: #888; }
 
 /* ===== Empty state ===== */
 .empty-state {
@@ -612,6 +613,25 @@ body {
   font-size: 12.5px;
 }
 .btn-delete:hover { color: #C0392B; }
+
+.btn-hide {
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  margin-right: 12px;
+}
+.btn-hide:hover { color: var(--cymer-navy); }
+
+.post-item-hidden .post-item-title { color: var(--ink-soft); }
+
+.post-hidden-notice {
+  font-size: 14px;
+  color: var(--ink-soft);
+  background: var(--line-soft);
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  line-height: 1.8;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 480px) {

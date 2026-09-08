@@ -23,7 +23,7 @@ export default async function handler(req, res) {
     try {
       const { data: post, error: postError } = await supabase
         .from('posts')
-        .select('id, title, body, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count')
+        .select('id, title, body, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count, is_hidden')
         .eq('id', id)
         .single();
 

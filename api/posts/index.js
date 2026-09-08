@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
       let query = supabase
         .from('posts')
-        .select('id, title, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count', { count: 'exact' });
+        .select('id, title, author_name, is_anonymous, is_repost, parent_id, created_at, reply_count, is_hidden', { count: 'exact' });
 
       if (q) {
         const orParts = [`title.ilike.%${q}%`, `body.ilike.%${q}%`];

@@ -132,6 +132,17 @@ async function apiGetPosts(page, query) {
   return res.json();
 }
 
+async function apiToggleHide(id, hide, adminPassword) {
+  const res = await fetch(`/api/posts/${id}/hide`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ adminPassword, hide })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || '처리에 실패했습니다');
+  return data;
+}
+
 async function apiDeletePost(id, password) {
   const res = await fetch(`/api/posts/${id}`, {
     method: 'DELETE',
@@ -232,9 +243,10 @@ function renderList(posts, listCount, totalCount, totalReplyCount, page) {
 function renderPostRow(post, depth = 0) {
   const style = depth > 0 ? ` style="--depth: ${depth}"` : '';
   return `
-    <div class="post-item${depth > 0 ? ' post-item-child' : ''}" data-id="${post.id}"${style}>
+    <div class="post-item${depth > 0 ? ' post-item-child' : ''}${post.is_hidden ? ' post-item-hidden' : ''}" data-id="${post.id}"${style}>
       <div class="post-item-top">
         ${post.is_repost ? '<span class="tag tag-repost">Re:</span>' : ''}
+        ${post.is_hidden ? '<span class="tag tag-hidden">🔒 검토 중</span>' : ''}
         <span class="post-item-title">${escapeHtml(post.title)}</span>
         ${post.reply_count > 0 ? `<span class="reply-count">[${post.reply_count}]</span>` : ''}
       </div>
@@ -327,17 +339,34 @@ async function openDetail(id) {
 }
 
 function renderDetail(post, replies) {
+  const bodyHtml = post.is_hidden
+    ? `<div class="post-hidden-notice">🔒 관리자에 의해 검토 중인 게시글입니다.<br>검토가 완료되면 내용을 다시 확인할 수 있습니다.</div>`
+    : `<div class="post-detail-body">${escapeHtml(post.body)}</div>`;
+
   detailOriginal.innerHTML = `
-    <h2 class="post-detail-title">${post.is_repost ? '<span class="tag tag-repost">Re:</span> ' : ''}${escapeHtml(post.title)}</h2>
+    <h2 class="post-detail-title">${post.is_repost ? '<span class="tag tag-repost">Re:</span> ' : ''}${post.is_hidden ? '<span class="tag tag-hidden">🔒 검토 중</span> ' : ''}${escapeHtml(post.title)}</h2>
     <div class="post-detail-meta">
       <span class="tag ${post.is_anonymous ? 'tag-anon' : 'tag-real'}">${escapeHtml(post.author_name)}</span>
       <span>${formatDate(post.created_at)}</span>
     </div>
-    <div class="post-detail-body">${escapeHtml(post.body)}</div>
+    ${bodyHtml}
     <div class="post-delete">
+      <button type="button" id="btn-toggle-hide" class="btn-link btn-hide">${post.is_hidden ? '🔓 숨김 해제 (관리자)' : '🔒 숨김 처리 (관리자)'}</button>
       <button type="button" id="btn-delete-post" class="btn-link btn-delete">삭제</button>
     </div>
   `;
+
+  document.getElementById('btn-toggle-hide').addEventListener('click', async () => {
+    const adminPassword = window.prompt('관리자 비밀번호를 입력하세요');
+    if (adminPassword === null) return;
+    try {
+      await apiToggleHide(post.id, !post.is_hidden, adminPassword);
+      showToast(post.is_hidden ? '숨김이 해제되었습니다' : '게시글이 숨김 처리되었습니다');
+      openDetail(post.id);
+    } catch (err) {
+      showToast(err.message);
+    }
+  });
 
   document.getElementById('btn-delete-post').addEventListener('click', async () => {
     const password = window.prompt('게시글 작성 시 입력한 비밀번호를 입력하세요');
