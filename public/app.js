@@ -381,7 +381,7 @@ function renderDetail(post, replies) {
     }
   });
 
-  if (!replies.length) {
+  if (!replies.length || post.is_hidden) {
     detailReplies.innerHTML = '';
   } else {
     detailReplies.innerHTML = replies.map(r => `
@@ -414,6 +414,8 @@ function renderDetail(post, replies) {
 
   formReply.reset();
   replyAuthorName.classList.add('hidden');
+  const replyFormWrap = document.querySelector('.reply-form-wrap');
+  if (replyFormWrap) replyFormWrap.style.display = post.is_hidden ? 'none' : '';
 }
 
 btnBackToList.addEventListener('click', () => {
